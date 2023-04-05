@@ -10,9 +10,9 @@ void test_pile_1(void){
     int* sortie;
     dPile pile = d_creer_pile();
 
-    d_enpiler(&pile,creer_int(VALEUR_TEST));
+    d_empiler(&pile,creer_int(VALEUR_TEST));
     for(int i = 0;i<5;i++){
-        d_enpiler(&pile,creer_int(i));
+        d_empiler(&pile,creer_int(i));
     }
 
     int fin = 0;
