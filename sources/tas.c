@@ -111,7 +111,7 @@ dNoeud* emplacement_par_num(dTas* tas, int num){
             num = (num-2)/2;
             direction = DROITE;
         }
-        d_enpiler(&pile,creer_direction(direction));
+        d_empiler(&pile,creer_direction(direction));
     }
 
     dNoeud* return_ = tas->debut;

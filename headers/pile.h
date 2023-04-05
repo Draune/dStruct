@@ -7,7 +7,7 @@ typedef struct{
 }dPile;
 
 dPile d_creer_pile();
-void d_enpiler(dPile* pile,void* contenu);
+void d_empiler(dPile* pile,void* contenu);
 void* d_depiler(dPile* pile);
 
 

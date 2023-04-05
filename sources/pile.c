@@ -6,7 +6,7 @@ dPile d_creer_pile(){
     return pile;
 }
 
-void d_enpiler(dPile* pile,void* contenu){
+void d_empiler(dPile* pile,void* contenu){
     dChaine* nouveau = d_creer_dChaine(contenu);
     nouveau->suivant = pile->debut;
     pile->debut = nouveau;
