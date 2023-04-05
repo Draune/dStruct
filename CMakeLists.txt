@@ -2,22 +2,25 @@ cmake_minimum_required(VERSION 3.20.2)
 
 set(CMAKE_C_STANDARD 11)
 
-project(test)
+project(dSruct)
 
-add_executable(test
-               tests/main_test.c
-               tests/creer_int.c
-               tests/creer_int.h
-               tests/test_file/test_file.c           
-               tests/test_file/test_file.h
-               tests/test_pile/test_pile.c           
-               tests/test_pile/test_pile.h
-               tests/test_tas/test_tas.c           
-               tests/test_tas/test_tas.h
-               tests/test_liste/test_liste.c           
-               tests/test_liste/test_liste.h
-               tests/test_avl/test_avl.c           
-               tests/test_avl/test_avl.h)  
+set(SRCS
+    sources/avl.c
+    sources/file.c
+    sources/liste.c
+    sources/maillons.c
+    sources/pile.c
+    sources/tas.c
+    )
+    
+set(HEADERS
+    headers/avl.h
+    headers/dstruct.h
+    headers/file.h
+    headers/liste.h
+    headers/maillons.h
+    headers/pile.h
+    headers/tas.h     
+    )
 
-add_subdirectory(dStruct)
-target_link_libraries(test dStruct)
+add_library(dStruct ${SRCS} ${HEADERS})
