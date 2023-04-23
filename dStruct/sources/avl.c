@@ -1,256 +1,268 @@
 #include "../headers/avl.h"
 
-// /!\ faire les tests de l'ajout d'abord /!\
+#define FIXED 1
+#define NOT_FIXED 0
+void fix(dAVL* avl,dNode* node);
+void sort(dAVL* avl,dNode* node);
+void rotate_right(dAVL* avl,dNode* top);
+void rotate_left(dAVL* avl,dNode* top);
+void set_high(dNode* node);
+int get_diff_high(dNode* node);
+int get_high(dNode* node);
 
-#define FIXER 1
-#define NON_FIXER 0
-void fixer(dAVL* avl,dNoeud* noeud);
-void tri(dAVL* avl,dNoeud* noeud);
-void rotation_droite(dAVL* avl,dNoeud* dessus);
-void rotation_gauche(dAVL* avl,dNoeud* dessus);
-void set_hauteur(dNoeud* noeud);
-int get_diff_hauteur(dNoeud* noeud);
-int get_hauteur(dNoeud* noeud);
+dNode* find_replacement(dNode* node);
+dNode* replace(dAVL* avl,dNode* node,dNode* replacement); // the output for sort
 
-dNoeud* trouver_remplacement(dNoeud* noeud);
-dNoeud* remplacer(dAVL* avl,dNoeud* noeud,dNoeud* remplacement); // la sortie pour le tri
-
-dAVL d_creer_avl(int (*test_tri)(void*,void*)){
+dAVL d_create_avl(int (*sort_test)(void*,void*)){
     dAVL avl;
-    avl.debut = NULL;
-    avl.test_tri = test_tri;
+    avl.start = NULL;
+    avl.sort_test = sort_test;
     return avl;
 }
 
-void d_ajouter_avl(dAVL* avl,void* contenu){
-    dNoeud* nouveau = d_creer_dNoeud(contenu);
-    fixer(avl,nouveau);
-    tri(avl,nouveau);
+void d_insert_avl(dAVL* avl,void* content){
+    dNode* new = d_create_node(content);
+    fix(avl,new);
+    sort(avl,new);
 }
 
-dNoeud* d_trouver_noeud_avl(dAVL* avl,void* contenu){
-    if(avl->debut == NULL)
+dNode* d_find_node_avl(dAVL* avl,void* content){
+    if(avl->start == NULL)
         return NULL;
-    dNoeud* return_ = NULL;
-    dNoeud* actuel = avl->debut;
-    while(actuel != NULL){
-        if(avl->test_tri((void*)actuel->contenu,(void*)contenu)){
-            return_ = actuel;
-            actuel = actuel->droite;
+    dNode* return_ = NULL;
+    dNode* current = avl->start;
+    while(current != NULL){
+        if(avl->sort_test((void*)current->content,(void*)content)){
+            return_ = current;
+            current = current->right;
         }
         else
-            actuel = actuel->gauche;
+            current = current->left;
     }
     return return_;
 }
 
-void* d_trouver_avl(dAVL* avl,void* contenu){
-    dNoeud* return_ = d_trouver_noeud_avl(avl,contenu);
+void* d_find_avl(dAVL* avl,void* content){
+    dNode* return_ = d_find_node_avl(avl,content);
     if(return_ == NULL)
         return NULL;
-    return (void*)return_->contenu;
+    return (void*)return_->content;
 }
 
-void* d_retirer_noeud_avl(dAVL* avl,dNoeud* noeud){
-    if(noeud == NULL)
+void* d_remove_node_avl(dAVL* avl,dNode* node){
+    if(node == NULL)
         return NULL;
     
-    tri(avl,remplacer(avl,noeud,trouver_remplacement(noeud)));
-    return d_supprimer_dNoeud(noeud);
+    sort(avl,replace(avl,node,find_replacement(node)));
+    return d_destroy_node(node);
 }
 
-void* d_retirer_avl(dAVL* avl,void* contenu){
-    return (void*)d_retirer_noeud_avl(avl,d_trouver_noeud_avl(avl,contenu));
+void* d_remove_avl(dAVL* avl,void* content){
+    return (void*)d_remove_node_avl(avl,d_find_node_avl(avl,content));
 }
 
-void fixer(dAVL* avl,dNoeud* noeud){
-    if(avl->debut == NULL)
-        avl->debut = noeud;
+void d_clear_avl(dAVL* avl,void (*free_content)(void*)){
+    if(avl->start != NULL){
+        dNode* more_on_right = avl->start;
+        while(more_on_right->right != NULL)
+            more_on_right = more_on_right->right;
+        void* more_on_right_content = d_remove_node_avl(avl,more_on_right);
+        while (avl->start != NULL){
+            void* to_delete = d_remove_avl(avl,more_on_right_content);
+            if(to_delete != NULL)
+                free_content(to_delete);
+        }
+    }
+}
+
+void fix(dAVL* avl,dNode* node){
+    if(avl->start == NULL)
+        avl->start = node;
     else{
-        dNoeud* actuel = avl->debut;
-        int fixe = NON_FIXER;
-        while(fixe != FIXER){
-            if(avl->test_tri((void*)noeud->contenu,(void*)actuel->contenu)){
-                if(actuel->gauche == NULL){
-                    noeud->precedent = actuel;
-                    actuel->gauche = noeud;
-                    fixe = FIXER;
+        dNode* current = avl->start;
+        int fixed = NOT_FIXED;
+        while(fixed != FIXED){
+            if(avl->sort_test((void*)node->content,(void*)current->content)){
+                if(current->left == NULL){
+                    node->prev = current;
+                    current->left = node;
+                    fixed = FIXED;
                 }
                 else
-                    actuel = actuel->gauche;
+                    current = current->left;
             }
             else{
-                if(actuel->droite == NULL){
-                    noeud->precedent = actuel;
-                    actuel->droite = noeud;
-                    fixe = FIXER;
+                if(current->right == NULL){
+                    node->prev = current;
+                    current->right = node;
+                    fixed = FIXED;
                 }
                 else
-                    actuel = actuel->droite;
+                    current = current->right;
             }
         }
     }
 }
 
-void tri(dAVL* avl,dNoeud* noeud){
-    while(noeud != NULL){
-        switch (get_diff_hauteur(noeud)){
-        case -2:// plus haut a gauche
-            if(get_diff_hauteur(noeud->gauche) == 1){// alors desequilibre a gauche puis droite
-                noeud = noeud->gauche;
-                rotation_gauche(avl,noeud);
-                set_hauteur(noeud);
-                noeud = noeud->precedent->precedent;
-                rotation_droite(avl,noeud);
+void sort(dAVL* avl,dNode* node){
+    while(node != NULL){
+        switch (get_diff_high(node)){
+        case -2:// higher on left
+            if(get_diff_high(node->left) == 1){// so higher on left then on right
+                node = node->left;
+                rotate_left(avl,node);
+                set_high(node);
+                node = node->prev->prev;
+                rotate_right(avl,node);
             }
             else
-                rotation_droite(avl,noeud);
+                rotate_right(avl,node);
             break;
-        case 2:// plus haut a droite
-            if(get_diff_hauteur(noeud->droite) == -1){// alors desequilibre a droite puis gauche
-                noeud = noeud->droite;
-                rotation_droite(avl,noeud);
-                set_hauteur(noeud);
-                noeud = noeud->precedent->precedent;
-                rotation_gauche(avl,noeud);
+        case 2:// higher on right
+            if(get_diff_high(node->right) == -1){// so higher on right then on left
+                node = node->right;
+                rotate_right(avl,node);
+                set_high(node);
+                node = node->prev->prev;
+                rotate_left(avl,node);
             }
             else
-                rotation_gauche(avl,noeud);
+                rotate_left(avl,node);
             break;
         case -1:
-        case 0: // cas normaux
+        case 0: // normal cases
         case 1:
             break;
         default:
             break;
         }
-        set_hauteur(noeud);
-        noeud = noeud->precedent;
+        set_high(node);
+        node = node->prev;
     }
 }
 
-void rotation_droite(dAVL* avl,dNoeud* dessus){
-    dNoeud* gauche = dessus->gauche;
+void rotate_right(dAVL* avl,dNode* top){
+    dNode* left = top->left;
 
-    if(dessus->precedent != NULL){
-        if(dessus->precedent->gauche == dessus)
-            dessus->precedent->gauche = gauche;
+    if(top->prev != NULL){
+        if(top->prev->left == top)
+            top->prev->left = left;
         else
-            dessus->precedent->droite = gauche;
+            top->prev->right = left;
     }
     else
-        avl->debut = gauche;
-    gauche->precedent = dessus->precedent;
+        avl->start = left;
+    left->prev = top->prev;
 
-    if(gauche->droite != NULL)
-        gauche->droite->precedent = dessus;
-    dessus->gauche = gauche->droite;
+    if(left->right != NULL)
+        left->right->prev = top;
+    top->left = left->right;
 
-    dessus->precedent = gauche;
-    gauche->droite = dessus;
+    top->prev = left;
+    left->right = top;
 }
 
-void rotation_gauche(dAVL* avl,dNoeud* dessus){
-    dNoeud* droite = dessus->droite;
+void rotate_left(dAVL* avl,dNode* top){
+    dNode* right = top->right;
 
-    if(dessus->precedent != NULL){
-        if(dessus->precedent->gauche == dessus)
-            dessus->precedent->gauche = droite;
+    if(top->prev != NULL){
+        if(top->prev->left == top)
+            top->prev->left = right;
         else
-            dessus->precedent->droite = droite;
+            top->prev->right = right;
     }
     else
-        avl->debut = droite;
-    droite->precedent = dessus->precedent;
+        avl->start = right;
+    right->prev = top->prev;
 
-    if(droite->gauche != NULL)
-        droite->gauche->precedent = dessus;
-    dessus->droite = droite->gauche;
+    if(right->left != NULL)
+        right->left->prev = top;
+    top->right = right->left;
 
-    dessus->precedent = droite;
-    droite->gauche = dessus;
+    top->prev = right;
+    right->left = top;
 }
 
-void set_hauteur(dNoeud* noeud){
-    noeud->count = (get_hauteur(noeud->droite) > get_hauteur(noeud->gauche))? get_hauteur(noeud->droite):get_hauteur(noeud->gauche);
-    (noeud->count)++;
+void set_high(dNode* node){
+    node->count = (get_high(node->right) > get_high(node->left))? get_high(node->right):get_high(node->left);
+    (node->count)++;
 }
 
-int get_diff_hauteur(dNoeud* noeud){
-    return get_hauteur(noeud->droite) - get_hauteur(noeud->gauche);
+int get_diff_high(dNode* node){
+    return get_high(node->right) - get_high(node->left);
 }
 
-int get_hauteur(dNoeud* noeud){
-    if(noeud == NULL)
+int get_high(dNode* node){
+    if(node == NULL)
         return 0;
     else
-        return noeud->count;
+        return node->count;
 }
 
-dNoeud* trouver_remplacement(dNoeud* noeud){
-    if(noeud->droite == NULL && noeud->gauche == NULL)
+dNode* find_replacement(dNode* node){
+    if(node->right == NULL && node->left == NULL)
         return NULL;
-    dNoeud* return_;
-    if(noeud->droite == NULL){
-        return_ = noeud->gauche;
-        if(return_->gauche != NULL)
-            return_->gauche->precedent = noeud;
-        noeud->gauche = return_->gauche;
+    dNode* return_;
+    if(node->right == NULL){
+        return_ = node->left;
+        if(return_->left != NULL)
+            return_->left->prev = node;
+        node->left = return_->left;
 
-        if(return_->droite != NULL)
-            return_->droite->precedent = noeud;
-        noeud->droite = return_->droite;
+        if(return_->right != NULL)
+            return_->right->prev = node;
+        node->right = return_->right;
     }
-    else if(noeud->gauche == NULL){
-        return_ = noeud->droite;
-        if(return_->gauche != NULL)
-            return_->gauche->precedent = noeud;
-        noeud->gauche = return_->gauche;
+    else if(node->left == NULL){
+        return_ = node->right;
+        if(return_->left != NULL)
+            return_->left->prev = node;
+        node->left = return_->left;
 
-        if(return_->droite != NULL)
-            return_->droite->precedent = noeud;
-        noeud->droite = return_->droite;
+        if(return_->right != NULL)
+            return_->right->prev = node;
+        node->right = return_->right;
     }
     else{
-        return_ = noeud->gauche;
-        while(return_->droite != NULL)
-            return_ = return_->droite;
+        return_ = node->left;
+        while(return_->right != NULL)
+            return_ = return_->right;
         
-        if(return_->precedent->droite == return_)
-            return_->precedent->droite = return_->gauche;
+        if(return_->prev->right == return_)
+            return_->prev->right = return_->left;
         else
-            return_->precedent->gauche = return_->gauche;
-        if(return_->gauche != NULL)
-            return_->gauche->precedent = return_->precedent;
+            return_->prev->left = return_->left;
+        if(return_->left != NULL)
+            return_->left->prev = return_->prev;
     }
     return return_;
 }
 
-dNoeud* remplacer(dAVL* avl,dNoeud* noeud,dNoeud* remplacement){
-    dNoeud* return_;
-    if(noeud->precedent != NULL){
-        if(noeud->precedent->gauche == noeud)
-            noeud->precedent->gauche = remplacement;
+dNode* replace(dAVL* avl,dNode* node,dNode* replacement){
+    dNode* return_;
+    if(node->prev != NULL){
+        if(node->prev->left == node)
+            node->prev->left = replacement;
         else 
-            noeud->precedent->droite = remplacement;
+            node->prev->right = replacement;
     }
     else
-        avl->debut = remplacement;
+        avl->start = replacement;
 
-    if(remplacement == NULL)
-        return_ = noeud->precedent;
+    if(replacement == NULL)
+        return_ = node->prev;
     else{
-        return_ = remplacement->precedent;
+        return_ = replacement->prev;
         
-        remplacement->precedent = noeud->precedent;
+        replacement->prev = node->prev;
 
-        if(noeud->gauche != NULL)
-            noeud->gauche->precedent = remplacement;
-        remplacement->gauche = noeud->gauche;
+        if(node->left != NULL)
+            node->left->prev = replacement;
+        replacement->left = node->left;
 
-        if(noeud->droite != NULL)
-            noeud->droite->precedent = remplacement;
-        remplacement->droite = noeud->droite;
+        if(node->right != NULL)
+            node->right->prev = replacement;
+        replacement->right = node->right;
     }
     return return_;
 }

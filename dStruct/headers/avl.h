@@ -1,18 +1,20 @@
 #ifndef DRAUNE_AVL
 #define DRAUNE_AVL
-#include "maillons.h"
+#include "link.h"
 
 typedef struct{
-    dNoeud* debut;
-    int (*test_tri)(void*,void*);// doit retourner 1 si le premier doit etre plus à gauche que le 2eme
+    dNode* start;
+    int (*sort_test)(void*,void*);// must return 1 if the 1st have to be more on the left than the 2nd
 }dAVL;
 
-dAVL d_creer_avl(int (*test_tri)(void*,void*));
-void d_ajouter_avl(dAVL* avl,void* contenu);
-dNoeud* d_trouver_noeud_avl(dAVL* avl,void* contenu);//trouve le noeud le plus a droite qui serait a gauche de contenu
-// retourne NULL si aucun ne peu etre a gauche de contenu
-void* d_trouver_avl(dAVL* avl,void* contenu);
-void* d_retirer_noeud_avl(dAVL* avl,dNoeud* noeud);
-void* d_retirer_avl(dAVL* avl,void* contenu);
+dAVL d_create_avl(int (*sort_test)(void*,void*));
+void d_insert_avl(dAVL* avl,void* content);
+// find the node the more on the right which will be on the left of content
+// return NULL if no one can be on the left of content
+dNode* d_find_node_avl(dAVL* avl,void* content);
+void* d_find_avl(dAVL* avl,void* content);
+void* d_remove_node_avl(dAVL* avl,dNode* node);
+void* d_remove_avl(dAVL* avl,void* content);
+void d_clear_avl(dAVL* avl,void (*free_content)(void*));
 
 #endif

@@ -2,209 +2,208 @@
 #include"../../dStruct/headers/avl.h"
 #include<stdlib.h>
 #include<stdio.h>
-#include"../creer_int.h"
+#include"../create_int.h"
 
-int tri_int_avl(void* int_1,void* int_2){
-    return (*((int*)int_1)<=*((int*)int_2))?1:0; // cf avl.h (retourner 1 si le premier doit etre plus a gauche)
-    // donc tas trié en ordre croissant
+int sort_int_avl(void* int_1,void* int_2){
+    return (*((int*)int_1)<=*((int*)int_2))?1:0;
 }
 
-#define VALEUR_FAIBLE 1
-#define VALEUR_MOYENNE 2
-#define VALEUR_FORTE 3
-void test_avl_rotations();
-void test_avl_rotation_gauche();
-void test_avl_rotation_droite_gauche();
-void test_avl_rotation_droite();
-void test_avl_rotation_gauche_droite();
-void test_avl_liaisons(dNoeud* dessus,dNoeud* gauche,dNoeud* droite);
-void test_avl_ordre(dNoeud* dessus,dNoeud* gauche,dNoeud* droite);
-void test_avl_liberer(dNoeud* dessus,dNoeud* gauche,dNoeud* droite);
+#define LOW_VALUE 1
+#define AVERAGE_VALUE 2
+#define HIGH_VALUE 3
+void test_avl_rotate();
+void test_avl_rotate_left();
+void test_avl_rotate_right_left();
+void test_avl_rotate_right();
+void test_avl_rotate_left_right();
+void test_avl_links(dNode* top,dNode* left,dNode* right);
+void test_avl_order(dNode* top,dNode* left,dNode* right);
+void test_avl_free(dNode* top,dNode* left,dNode* right);
 
-#define VALEUR_DEBUT 100
-#define VALEUR_INTERMEDIAIRE 20
-#define VALEUR_FIN -1
-#define VALEUR_TROUVER 17
+#define START_VALUE 100
+#define INTERMEDIATE_VALUE 20
+#define END_VALUE -1
+#define FIND_VALUE 17
 void test_avl_total();
 
 void test_avl_1(void){
-    test_avl_rotations();
+    test_avl_rotate();
     test_avl_total();
 }
 
-void test_avl_rotations(){
-    test_avl_rotation_gauche();
-    test_avl_rotation_droite_gauche();
-    test_avl_rotation_droite();
-    test_avl_rotation_gauche_droite();
+void test_avl_rotate(){
+    test_avl_rotate_left();
+    test_avl_rotate_right_left();
+    test_avl_rotate_right();
+    test_avl_rotate_left_right();
 }
 
-void test_avl_rotation_gauche(){
-    dAVL avl = d_creer_avl(tri_int_avl);
-    d_ajouter_avl(&avl,creer_int(VALEUR_FAIBLE));
-    d_ajouter_avl(&avl,creer_int(VALEUR_MOYENNE));
-    d_ajouter_avl(&avl,creer_int(VALEUR_FORTE));
+void test_avl_rotate_left(){
+    dAVL avl = d_create_avl(sort_int_avl);
+    d_insert_avl(&avl,create_int(LOW_VALUE));
+    d_insert_avl(&avl,create_int(AVERAGE_VALUE));
+    d_insert_avl(&avl,create_int(HIGH_VALUE));
 
-    dNoeud* debut = avl.debut;
-    dNoeud* droite = avl.debut->droite;
-    dNoeud* gauche = avl.debut->gauche;
+    dNode* start = avl.start;
+    dNode* right = avl.start->right;
+    dNode* left = avl.start->left;
 
-    printf("test rotation gauche\n");
-    test_avl_liaisons(debut,gauche,droite);
-    test_avl_ordre(debut,gauche,droite);
-    test_avl_liberer(debut,gauche,droite);
+    printf("test rotate left\n");
+    test_avl_links(start,left,right);
+    test_avl_order(start,left,right);
+    test_avl_free(start,left,right);
 }
 
-void test_avl_rotation_droite_gauche(){
-    dAVL avl = d_creer_avl(tri_int_avl);
-    d_ajouter_avl(&avl,creer_int(VALEUR_FAIBLE));
-    d_ajouter_avl(&avl,creer_int(VALEUR_FORTE));
-    d_ajouter_avl(&avl,creer_int(VALEUR_MOYENNE));
+void test_avl_rotate_right_left(){
+    dAVL avl = d_create_avl(sort_int_avl);
+    d_insert_avl(&avl,create_int(LOW_VALUE));
+    d_insert_avl(&avl,create_int(HIGH_VALUE));
+    d_insert_avl(&avl,create_int(AVERAGE_VALUE));
 
-    dNoeud* debut = avl.debut;
-    dNoeud* droite = avl.debut->droite;
-    dNoeud* gauche = avl.debut->gauche;
+    dNode* start = avl.start;
+    dNode* right = avl.start->right;
+    dNode* left = avl.start->left;
 
-    printf("test rotation droite gauche\n");
-    test_avl_liaisons(debut,gauche,droite);
-    test_avl_ordre(debut,gauche,droite);
-    test_avl_liberer(debut,gauche,droite);
+    printf("test rotate right left\n");
+    test_avl_links(start,left,right);
+    test_avl_order(start,left,right);
+    test_avl_free(start,left,right);
 }
 
-void test_avl_rotation_droite(){
-    dAVL avl = d_creer_avl(tri_int_avl);
-    d_ajouter_avl(&avl,creer_int(VALEUR_FORTE));
-    d_ajouter_avl(&avl,creer_int(VALEUR_MOYENNE));
-    d_ajouter_avl(&avl,creer_int(VALEUR_FAIBLE));
+void test_avl_rotate_right(){
+    dAVL avl = d_create_avl(sort_int_avl);
+    d_insert_avl(&avl,create_int(HIGH_VALUE));
+    d_insert_avl(&avl,create_int(AVERAGE_VALUE));
+    d_insert_avl(&avl,create_int(LOW_VALUE));
 
-    dNoeud* debut = avl.debut;
-    dNoeud* droite = avl.debut->droite;
-    dNoeud* gauche = avl.debut->gauche;
+    dNode* start = avl.start;
+    dNode* right = avl.start->right;
+    dNode* left = avl.start->left;
 
-    printf("test rotation droite\n");
-    test_avl_liaisons(debut,gauche,droite);
-    test_avl_ordre(debut,gauche,droite);
-    test_avl_liberer(debut,gauche,droite);
+    printf("test rotate right\n");
+    test_avl_links(start,left,right);
+    test_avl_order(start,left,right);
+    test_avl_free(start,left,right);
 }
 
-void test_avl_rotation_gauche_droite(){
-    dAVL avl = d_creer_avl(tri_int_avl);
-    d_ajouter_avl(&avl,creer_int(VALEUR_FORTE));
-    d_ajouter_avl(&avl,creer_int(VALEUR_FAIBLE));
-    d_ajouter_avl(&avl,creer_int(VALEUR_MOYENNE));
+void test_avl_rotate_left_right(){
+    dAVL avl = d_create_avl(sort_int_avl);
+    d_insert_avl(&avl,create_int(HIGH_VALUE));
+    d_insert_avl(&avl,create_int(LOW_VALUE));
+    d_insert_avl(&avl,create_int(AVERAGE_VALUE));
 
-    dNoeud* debut = avl.debut;
-    dNoeud* droite = avl.debut->droite;
-    dNoeud* gauche = avl.debut->gauche;
+    dNode* start = avl.start;
+    dNode* right = avl.start->right;
+    dNode* left = avl.start->left;
 
-    printf("test rotation gauche droite\n");
-    test_avl_liaisons(debut,gauche,droite);
-    test_avl_ordre(debut,gauche,droite);
-    test_avl_liberer(debut,gauche,droite);
+    printf("test rotate left right\n");
+    test_avl_links(start,left,right);
+    test_avl_order(start,left,right);
+    test_avl_free(start,left,right);
 }
 
-void test_avl_liaisons(dNoeud* dessus,dNoeud* gauche,dNoeud* droite){
-    if(gauche->gauche == NULL && gauche->droite == NULL && droite->gauche == NULL && droite->droite == NULL)
-        printf("liaisons basses nulles\n");
+void test_avl_links(dNode* top,dNode* left,dNode* right){
+    if(left->left == NULL && left->right == NULL && right->left == NULL && right->right == NULL)
+        printf("bottom links null\n");
     else
-        printf("liaisons basses non-nulles\n");
+        printf("bottom links not-null\n");
     
-    if(dessus->droite == droite && droite->precedent == dessus)
-        printf("liaisons droite ok\n");
+    if(top->right == right && right->prev == top)
+        printf("links right ok\n");
     else
-        printf("liaisons droite non-ok\n");
+        printf("links right not-ok\n");
 
-    if(dessus->gauche == gauche && gauche->precedent == dessus)
-        printf("liaisons gauche ok\n");
+    if(top->left == left && left->prev == top)
+        printf("links left ok\n");
     else
-        printf("liaisons gauche non-ok\n");
+        printf("links left not-ok\n");
 
-    if(dessus->precedent == NULL)
-        printf("liaison haute nulle\n");
+    if(top->prev == NULL)
+        printf("link top null\n");
     else
-        printf("liaison haute non-nulle\n");
+        printf("link top not-null\n");
 }
 
-void test_avl_ordre(dNoeud* dessus,dNoeud* gauche,dNoeud* droite){
-    int sortie = *((int*)gauche->contenu);
-    if(sortie == VALEUR_FAIBLE)
-        printf("valeur gauche ok\n");
+void test_avl_order(dNode* top,dNode* left,dNode* right){
+    int output = *((int*)left->content);
+    if(output == LOW_VALUE)
+        printf("value left ok\n");
     else
-        printf("valeur gauche non-ok\n");
+        printf("value left not-ok\n");
 
-    sortie = *((int*)dessus->contenu);
-    if(sortie == VALEUR_MOYENNE)
-        printf("valeur dessus ok\n");
+    output = *((int*)top->content);
+    if(output == AVERAGE_VALUE)
+        printf("value top ok\n");
     else
-        printf("valeur dessus non-ok\n");
+        printf("value top not-ok\n");
 
-    sortie = *((int*)droite->contenu);
-    if(sortie == VALEUR_FORTE)
-        printf("valeur droite ok\n");
+    output = *((int*)right->content);
+    if(output == HIGH_VALUE)
+        printf("value right ok\n");
     else
-        printf("valeur droite non-ok\n");
+        printf("value right not-ok\n");
 }
 
-void test_avl_liberer(dNoeud* dessus,dNoeud* gauche,dNoeud* droite){
-    free((int*)dessus->contenu);
-    free((int*)droite->contenu);
-    free((int*)gauche->contenu);
-    free(dessus);
-    free(droite);
-    free(gauche);
+void test_avl_free(dNode* top,dNode* left,dNode* right){
+    free((int*)top->content);
+    free((int*)right->content);
+    free((int*)left->content);
+    free(top);
+    free(right);
+    free(left);
 }
 
 void test_avl_total(){
-    dAVL avl = d_creer_avl(tri_int_avl);
-    d_ajouter_avl(&avl,creer_int(VALEUR_DEBUT));
-    d_ajouter_avl(&avl,creer_int(VALEUR_INTERMEDIAIRE));
-    d_ajouter_avl(&avl,creer_int(VALEUR_FIN));
-    d_ajouter_avl(&avl,creer_int(VALEUR_TROUVER));
+    dAVL avl = d_create_avl(sort_int_avl);
+    d_insert_avl(&avl,create_int(START_VALUE));
+    d_insert_avl(&avl,create_int(INTERMEDIATE_VALUE));
+    d_insert_avl(&avl,create_int(END_VALUE));
+    d_insert_avl(&avl,create_int(FIND_VALUE));
 
     for(int i = 10;i<15;i++)
-        d_ajouter_avl(&avl,creer_int(i));
+        d_insert_avl(&avl,create_int(i));
     for(int i = 30;i<35;i++)
-        d_ajouter_avl(&avl,creer_int(i));
+        d_insert_avl(&avl,create_int(i));
 
     printf("\ntest total\n\n");
 
-    int entree = VALEUR_TROUVER;
-    int* sortie = (int*)d_trouver_avl(&avl,&entree);
-    if(*sortie == VALEUR_TROUVER)
-        printf("valeur trouver ok\n");
+    int input = FIND_VALUE;
+    int* output = (int*)d_find_avl(&avl,&input);
+    if(*output == FIND_VALUE)
+        printf("value find ok\n");
     else
-        printf("valeur trouver non-ok\n");
-    printf("%d\n",*sortie);
+        printf("value find not-ok\n");
+    printf("%d\n",*output);
 
-    entree = VALEUR_DEBUT;
-    sortie = (int*)d_retirer_avl(&avl,&entree);
-    if(*sortie == VALEUR_DEBUT)
-        printf("valeur debut ok\n");
+    input = START_VALUE;
+    output = (int*)d_remove_avl(&avl,&input);
+    if(*output == START_VALUE)
+        printf("value start ok\n");
     else
-        printf("valeur debut non-ok\n");
-    printf("%d\n",*sortie);
+        printf("value start not-ok\n");
+    printf("%d\n",*output);
 
-    while(*sortie != VALEUR_INTERMEDIAIRE){
-        free(sortie);
-        sortie = (int*)d_retirer_avl(&avl,&entree);
-        printf("%d\n",*sortie);
+    while(*output != INTERMEDIATE_VALUE){
+        free(output);
+        output = (int*)d_remove_avl(&avl,&input);
+        printf("%d\n",*output);
     }
     
-    printf("valeur intermediaire ok\n");
+    printf("value interediate ok\n");
 
     for(int i = 30;i<35;i++)
-        d_ajouter_avl(&avl,creer_int(i));
+        d_insert_avl(&avl,create_int(i));
 
-    while (*sortie != VALEUR_FIN){
-        free(sortie);
-        sortie = (int*)d_retirer_avl(&avl,&entree);
-        printf("%d\n",*sortie);
+    while (*output != END_VALUE){
+        free(output);
+        output = (int*)d_remove_avl(&avl,&input);
+        printf("%d\n",*output);
     }
-    free(sortie);
-    printf("valeur fin ok\n");
+    free(output);
+    printf("value end ok\n");
 
-    if(d_retirer_avl(&avl,&entree) == NULL)
-        printf("fini ok \n");
+    if(d_remove_avl(&avl,&input) == NULL)
+        printf("end ok \n");
     else
-        printf("fini non-ok \n");
+        printf("end not-ok \n");
 }

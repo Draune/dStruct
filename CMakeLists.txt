@@ -6,18 +6,20 @@ project(test)
 
 add_executable(test
                tests/main_test.c
-               tests/creer_int.c
-               tests/creer_int.h
-               tests/test_file/test_file.c           
-               tests/test_file/test_file.h
-               tests/test_pile/test_pile.c           
-               tests/test_pile/test_pile.h
-               tests/test_tas/test_tas.c           
-               tests/test_tas/test_tas.h
-               tests/test_liste/test_liste.c           
-               tests/test_liste/test_liste.h
+               tests/create_int.c
+               tests/create_int.h
+               tests/test_queue/test_queue.c           
+               tests/test_queue/test_queue.h
+               tests/test_stack/test_stack.c           
+               tests/test_stack/test_stack.h
+               tests/test_heap/test_heap.c           
+               tests/test_heap/test_heap.h
+               tests/test_list/test_list.c           
+               tests/test_list/test_list.h
                tests/test_avl/test_avl.c           
-               tests/test_avl/test_avl.h)  
+               tests/test_avl/test_avl.h
+               tests/test_vector/test_vector.c           
+               tests/test_vector/test_vector.h)  
 
 add_subdirectory(dStruct)
 target_link_libraries(test dStruct)
