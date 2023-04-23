@@ -3,11 +3,12 @@
 Bibliothèque de structures de données génériques qui permettent d'éviter de les reprogrammer.
 
 La bibliothèque contient actuellement les structures suivantes :
-- Pile
-- File
-- Liste chaînée
+- Pile (LIFO)
+- File (FIFO)
+- Liste chaînée (triée)
 - Tas
 - Arbre AVL
+- Vector (un peu comme en C++)
 ## Utilisation de la bibliothèque
 ### Ajout à un projet
 Pour utiliser la bibliothèque, il faut simplement la clonnée dans le répertoire du projet avec :
@@ -21,11 +22,12 @@ target_link_libraries(nom_de_votre_executable dStruct)
 ```
 ### Utilisation générale de la bibliothèque
 Les noms des structures sont :
-- pour la pile : dPile
-- pour la file : dFile
-- pour la liste : dListe
-- pour le tas : dTas
+- pour la pile : dStack
+- pour la file : dQueue
+- pour la liste : dList
+- pour le tas : dHeap
 - pour l'arbre AVL : dAVL
+- pour le vector : dVector
 
 Pour initialiser une de ces structures il suffit d'appeler une des fonctions citées ultérieurement qui renvera une structure du type demandé.
 
@@ -33,17 +35,11 @@ Lors de l'ajout d'un élément, on passe en argument à la fonction un pointeur 
 
 La suppression d'un élément revoie le pointeur de la donnée stockée (/!\ si la donnée a été allouée dynamiquement, il faudra alors la libérer).
 
-Lorsque l'on supprime alors que la structure est de données est vide, la fonction renvoie NULL, ainsi on peut utiliser cela pour vider la structure de la manière suivante :
-```
-pointeur_sortie = d_supprimer...(...);
-while(pointeur_sortie != NULL){
-    liberer_memoire_sortie(pointeur_sortie);
-    pointeur_sortie = d_supprimer...(...);
-}
-```
-Avec pointeur_sortie un pointeur de votre type de donnée et liberer_memoire_sortie() une fonction qui libère la mémoire utilisée par votre donnée.
+Lorsque l'on supprime alors que la structure est de données est vide, la fonction renvoie NULL.
 
-/!\ Il faut alors mieux évité d'ajouter le pointeur NULL en tant que donnée.
+Toute les structures ont une fonction qui permet de les vider entièrement.
+
+/!\ Il faut mieux évité d'ajouter le pointeur NULL en tant que donnée.
 
 L'utilisation de pointeurs génériques (void*) permet de stocker n'importe quel type de donnée.
 
@@ -56,28 +52,28 @@ Pour les exemples suivant nous "utiliserons" un type de donnée abstrait : Conte
 #### Création de la pile
 ##### Fonction
 ```
-dPile d_creer_pile(void)
+dStack d_create_stack();
 ```
 Renvoie une pile initialisée et vide.
 ##### Utilisation
 ```
-dPile pile = d_creer_pile();
+dStack pile = d_create_stack();
 ```
 #### Ajout dans la pile
 ##### Fonction
 ```
-void d_empiler(dPile* pile,void* contenu)
+void d_push_stack(dStack* stack,void* content);
 ```
-Ajoute dans la pile la donnée "contenu".
+Ajoute dans la pile la donnée "content".
 ##### Utilisation
 En utilisant la pile créée précédemment :
 ```
-d_empiler(&pile,creer_contenu());
+d_push_stack(&pile,creer_contenu());
 ```
 #### Suppression dans la pile
 ##### Fonction
 ```
-void* d_depiler(dPile* pile)
+void* d_pop_stack(dStack* stack);
 ```
 Retire le dernier élément ajouté à la pile.
 ##### Utilisation
@@ -86,168 +82,229 @@ En utilisant la pile créée précédemment :
 Contenu* contenu = (Contenu*)d_depiler(&pile);
 free(contenu);
 ```
+#### Vider la pile
+La fonction suivante permet de vider la pile :
+```
+void d_clear_stack(dStack* stack,void (*free_content)(void*));
+```
+Dans notre cas il faudrait passer la fonction free de stdlib.h, sinon mettre la fonction qui permet de liberer la memoire du contenu.
 ### Utilisation de la file
 #### Création de la file
 ##### Fonction
 ```
-dFile d_creer_file(void)
+dQueue d_create_queue();
 ```
 Renvoie une file initialisée et vide.
 ##### Utilisation
 ```
-dFile file = d_creer_file();
+dQueue file = d_create_queue();
 ```
 #### Ajout dans la file
 ##### Fonction
 ```
-void d_enfiler(dFile* file,void* contenu)
+void d_push_queue(dQueue* queue,void* content)
 ```
-Ajoute dans la file la donnée "contenu".
+Ajoute dans la file la donnée "content".
 ##### Utilisation
 En utilisant la file créée précédemment :
 ```
-d_enfiler(&file,creer_contenu());
+d_push_queue(&file,creer_contenu());
 ```
 #### Suppression dans la file
 ##### Fonction
 ```
-void* d_defiler(dFile* file)
+void* d_pop_queue(dQueue* queue)
 ```
 Retire le premier élément ajouté à la file.
 ##### Utilisation
 En utilisant la file créée précédemment :
 ```
-Contenu* contenu = (Contenu*)d_defiler(&file);
+Contenu* contenu = (Contenu*)d_pop_queue(&file);
 free(contenu);
 ```
+#### Vider la file
+La fonction suivante permet de vider la file :
+```
+void d_clear_queue(dQueue* queue,void (*free_content)(void*));
+```
+Mêmes indications que pour la pile.
 ### Utilisation de la liste chaînée
 #### Création de la liste
 ##### Fonction
 ```
-dListe d_creer_liste(int (*test_tri)(void*,void*))
+dList d_create_list(int (*sort_test)(void*,void*));
 ```
-Renvoie une Liste initialisée et vide et qui utilise la fonction de tri passé en argument :
+Renvoie une List initialisée et vide et qui utilise la fonction de tri passé en argument :
 
 La fonction de tri doit renvoyer 1 lorsque le premier contenu (contenu représenté par void*) doit être plus proche du début que le deuxième, 0 sinon.
 ##### Utilisation
 ```
-dListe liste = d_creer_liste(test_tri_contenu);
+dList liste = d_create_list(test_tri_contenu);
 ```
 On crée alors une liste qui trie les contenus par ordre décroissant.
 #### Ajout dans la liste
 ##### Fonction
 ```
-void d_ajouter_liste(dListe* liste,void* contenu)
+void d_insert_list(dList* list,void* content);
 ```
-Ajoute dans la liste la donnée "contenu" (tri lors de l'insertion).
+Ajoute dans la liste la donnée "content" (tri lors de l'insertion).
 ##### Utilisation
 En utilisant la liste créée précédemment :
 ```
-d_ajouter_liste(&liste,creer_contenu());
+d_insert_list(&liste,creer_contenu());
 ```
 #### Recherche dans la liste
 ##### Fonction
 ```
-dDoubleChaine* d_trouver_chaine_liste(dListe* liste,void* contenu)
-void* d_trouver_liste(dListe* liste,void* contenu)
+dDoubleChain* d_find_chain_list(dList* list,void* content);
+void* d_find_list(dList* list,void* content);
 ```
-Renvoient sans supprimer de la chaine l'élément le plus proche du début tel que test_tri(contenu,contenu_passer_en_argument) renvoie 0;
+Renvoient sans supprimer de la chaine l'élément le plus proche du début tel que sort_test(contenu,contenu_passer_en_argument) renvoie 0;
 #### Suppression dans la liste
 ##### Fonction
 ```
-void* d_retirer_chaine_liste(dListe* liste,dDoubleChaine* chaine)
-void* d_retirer_liste(dListe* liste,void* contenu)
-void* d_retirer_premier_liste(dListe* liste)
+void* d_remove_chain_list(dList* list,dDoubleChain* chain);
+void* d_remove_list(dList* list,void* content);
+void* d_remove_first_list(dList* list);
 ```
 Font la même chose que les fonctions trouver mais en suppriment l'élément de la liste.
 ##### Utilisation
 En utilisant la liste créée précédemment :
 ```
-Contenu* contenu = (Contenu*)d_retirer_premier_liste(&liste);
+Contenu* contenu = (Contenu*)d_remove_first_list(&liste);
 free(contenu);
 ```
+#### Vider la liste
+La fonction suivante permet de vider la liste :
+```
+void d_clear_list(dList* list,void (*free_content)(void*));
+```
+Mêmes indications que pour la pile.
 ### Utilisation du tas
 #### Création du tas
 ##### Fonction
 ```
-dTas d_creer_tas(int (*test_tri)(void*,void*))
+dHeap d_create_heap(int (*sort_test)(void*,void*));
 ```
 Renvoie un tas initialisé et vide et qui utilise la fontion de tri test_tri :
 
 Cette fonction de tri doit renvoyer 1 lorsque le premier contenu doit être plus haut dans le tas que le deuxième.
 ##### Utilisation
 ```
-dTas tas = d_creer_tas(test_tri_contenu);
+dHeap tas = d_create_heap(test_tri_contenu);
 ```
 Crée donc un tas qui va ressortir son élément le plus "grand".
 #### Ajout dans le tas
 ##### Fonction
 ```
-void d_entasser(dTas* tas,void* contenu)
+void d_push_heap(dHeap* heap,void* content)
 ```
-Ajoute dans le tas la donnée "contenu" en triant le tas.
+Ajoute dans le tas la donnée "content" en triant le tas.
 ##### Utilisation
 En utilisant le tas créé précédemment :
 ```
-d_entasser(&tas,creer_contenu());
+d_push_heap(&tas,creer_contenu());
 ```
 #### Suppression dans le tas
 ##### Fonction
 ```
-void* d_detasser(dTas* tas)
+void* d_pop_heap(dHeap* heap);
 ```
 Retire l'élément le plus haut dans le tas.
 ##### Utilisation
 En utilisant le tas créé précédemment :
 ```
-Contenu* contenu = (Contenu*)d_detasser(&tas);
+Contenu* contenu = (Contenu*)d_pop_heap(&tas);
 free(contenu);
 ```
+#### Vider le tas
+La fonction suivante permet de vider le tas :
+```
+void d_clear_heap(dHeap* heap,void (*free_content)(void*));
+```
+Mêmes indications que pour la pile.
 ### Utilisation de l'arbre AVL
 #### Création de l'AVL
 ##### Fonction
 ```
-dAVL d_creer_avl(int (*test_tri)(void*,void*))
+dAVL d_create_avl(int (*sort_test)(void*,void*))
 ```
 Renvoie un AVL initialisé et vide et qui utilise la fonction de tri passé en argument :
 
 La fonction de tri doit renvoyer 1 lorsque le premier contenu (contenu représenté par void*) doit être plus à gauche que le deuxième, 0 sinon.
 ##### Utilisation
 ```
-dAVL avl = d_creer_avl(test_tri_contenu);
+dAVL avl = d_create_avl(test_tri_contenu);
 ```
 On crée alors un AVL qui trie les contenus par ordre décroissant (de gauche à droite).
 #### Ajout dans l'AVL
 ##### Fonction
 ```
-void d_ajouter_avl(dAVL* avl,void* contenu)
+void d_insert_avl(dAVL* avl,void* content)
 ```
-Ajoute dans l'AVL la donnée "contenu" (tri lors de l'insertion).
+Ajoute dans l'AVL la donnée "content" (tri lors de l'insertion).
 ##### Utilisation
 En utilisant l'AVL créé précédemment :
 ```
-d_ajouter_avl(&avl,creer_contenu());
+d_insert_avl(&avl,creer_contenu());
 ```
 #### Recherche dans l'AVL
 ##### Fonction
 ```
-dNoeud* d_trouver_noeud_avl(dAVL* avl,void* contenu)
-void* d_trouver_avl(dAVL* avl,void* contenu)
+dNode* d_find_node_avl(dAVL* avl,void* content);
+void* d_find_avl(dAVL* avl,void* content);
 ```
 Renvoient sans supprimer de l'arbre l'élément le plus a droite tel que test_tri(contenu,contenu_passer_en_argument) renvoie 1;
 #### Suppression dans l'AVL
 ##### Fonction
 ```
-void* d_retirer_noeud_avl(dAVL* avl,dNoeud* noeud);
-void* d_retirer_avl(dAVL* avl,void* contenu);
+void* d_remove_node_avl(dAVL* avl,dNode* node);
+void* d_remove_avl(dAVL* avl,void* content);
 ```
-Font la même chose que les fonctions trouver mais en suppriment l'élément de la liste.
+Font la même chose que les fonctions trouver mais en suppriment l'élément de l'AVL.
 ##### Utilisation
-En utilisant le tas créé précédemment :
+En utilisant l'AVL créé précédemment :
 ```
 Contenu* test = creer_contenu();
-Contenu* contenu = (Contenu*)d_retirer_avl(&avl,test);
+Contenu* contenu = (Contenu*)d_remove_avl(&avl,test);
 free(test);
 free(contenu);
 ```
 Va donc renvoyer l'élément le plus proche de test tel que "*contenu >= *test".
+#### Vider l'AVL
+La fonction suivante permet de vider l'AVL :
+```
+void d_clear_avl(dAVL* avl,void (*free_content)(void*));
+```
+Mêmes indications que pour la pile.
+### Utilisation du vector
+Le vector est un tableau de pointeurs vers les données, donc les données doivent être allouées dynamiquement.
+#### Création du vector
+```
+dVector d_create_vector(unsigned int size);
+```
+Renvoie un vector de la taille de size initialisé à NULL;
+#### Ajout dans un vector
+```
+void d_push_back_vector(dVector* vector,void* content);
+void d_insert_vector(dVector* vector,unsigned int i,void* content);
+```
+d_push_back_vector ajoute à la fin en augmentant la taille du vector et d_insert_vector ajoute à l'emplacement i à condition que celui-ci soit vide et que i < vector->size.
+#### Parcourir le vector
+```
+void* d_access_vector(dVector* vector,unsigned int i);
+```
+Renvoie la donnée de la case i sans la supprimer du vector.
+
+Pour parcourir le vector on peut faire :
+```
+for(int i = 0;i<vector.size;i++){
+    print_contenu(d_access_vector(&vector,i));
+}
+```
+#### Suppression dans le vector
+```
+void* d_pop_back_vector(dVector* vector);
+void* d_remove_vector(dVector* vector,unsigned int i);
+```
+Les deux fonctions renvoient un pointeur sur la donnée qui a été retirée du vector, d_pop_back_vector retire la dernière donnée en réduisant la taille du vector et d_remove_vector retire la donnée de la case i.
