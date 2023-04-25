@@ -7,7 +7,7 @@ typedef struct{
     unsigned int real_size;
 }dVector;
 
-dVector d_create_vector(unsigned int size);
+dVector d_init_vector(unsigned int size);
 void d_push_back_vector(dVector* vector,void* content);
 void* d_pop_back_vector(dVector* vector);
 void* d_access_vector(dVector* vector,unsigned int i);

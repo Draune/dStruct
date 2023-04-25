@@ -1,6 +1,6 @@
 #include"../headers/list.h"
 
-dList d_create_list(int (*sort_test)(void*,void*)){
+dList d_init_list(int (*sort_test)(void*,void*)){
     dList list;
     list.start = NULL;
     list.sort_test = sort_test;
@@ -12,14 +12,14 @@ void d_insert_list(dList* list,void* content){
     if(list->start == NULL){
         list->start = new;
     }
-    else if(list->sort_test((void*)content,(void*)list->start->content)){
+    else if(list->sort_test((void*)content,(void*)list->start->content) >= 0){
         new->next = list->start;
         list->start->prev = new;
         list->start = new;
     }
     else{
         dDoubleChain* location = list->start;
-        while (location->next != NULL && list->sort_test((void*)location->next->content,(void*)content)){
+        while (location->next != NULL && list->sort_test((void*)location->next->content,(void*)content) >= 0){
             location = location->next;
         }
         
@@ -33,7 +33,7 @@ void d_insert_list(dList* list,void* content){
 
 dDoubleChain* d_find_chain_list(dList* list,void* content){
     dDoubleChain* find = list->start;
-    while(find != NULL && list->sort_test((void*)find->content,(void*)content))
+    while(find != NULL && list->sort_test((void*)find->content,(void*)content) > 0)
         find = find->next;
     if(find == NULL){
         return NULL;
@@ -43,9 +43,17 @@ dDoubleChain* d_find_chain_list(dList* list,void* content){
 
 void* d_find_list(dList* list,void* content){
     dDoubleChain* return_ = d_find_chain_list(list,content);
-    if(return_ == NULL)
-        return NULL;
-    return (void*)return_->content;
+    return (return_ == NULL)?NULL:return_->content;
+}
+
+dDoubleChain* d_find_eq_chain_list(dList* list,void* content){
+    dDoubleChain* return_ = d_find_chain_list(list,content);
+    return (return_ == NULL || list->sort_test(content,return_->content) != 0)?NULL:return_;
+}
+
+void* d_find_eq_list(dList* list,void* content){
+    void* return_ = d_find_list(list,content);
+    return (return_ == NULL || list->sort_test(content,return_) != 0)?NULL:return_;
 }
 
 void* d_remove_chain_list(dList* list,dDoubleChain* chain){

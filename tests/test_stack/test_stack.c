@@ -8,7 +8,7 @@
 
 void test_stack_1(void){
     int* output;
-    dStack stack = d_create_stack();
+    dStack stack = d_init_stack();
 
     d_push_stack(&stack,create_int(TEST_VALUE));
     for(int i = 0;i<5;i++){

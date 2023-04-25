@@ -13,7 +13,7 @@ void exchange(dHeap* heap,dNode* top_node,dNode* bottom_node);
 int go_up(dHeap *heap,dNode* node);
 int go_down(dHeap *heap,dNode* node);
 
-dHeap d_create_heap(int (*sort_test)(void*,void*)){
+dHeap d_init_heap(int (*sort_test)(void*,void*)){
     dHeap heap;
     heap.start = NULL;
     heap.count = 0;
@@ -107,7 +107,7 @@ void* create_direction(int direction){
 }
 
 dNode* location_per_num(dHeap* heap, int num){
-    dStack stack = d_create_stack();
+    dStack stack = d_init_stack();
     int direction;
     while(num != 0){
         if(num%2 == 1){

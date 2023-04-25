@@ -1,6 +1,6 @@
 #include "../headers/stack.h"
 
-dStack d_create_stack(){
+dStack d_init_stack(){
     dStack stack;
     stack.start = NULL;
     return stack;

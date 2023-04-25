@@ -12,7 +12,7 @@ int sort_int_heap(void* int_1,void* int_2){
 
 void test_heap_1(void){
     int* output;
-    dHeap heap = d_create_heap(sort_int_heap);
+    dHeap heap = d_init_heap(sort_int_heap);
 
     d_push_heap(&heap,create_int(VALEUR_TEST));
     for(int i = 0;i<5;i++){

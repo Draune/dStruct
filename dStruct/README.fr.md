@@ -52,12 +52,12 @@ Pour les exemples suivant nous "utiliserons" un type de donnée abstrait : Conte
 #### Création de la pile
 ##### Fonction
 ```
-dStack d_create_stack();
+dStack d_init_stack();
 ```
 Renvoie une pile initialisée et vide.
 ##### Utilisation
 ```
-dStack pile = d_create_stack();
+dStack pile = d_init_stack();
 ```
 #### Ajout dans la pile
 ##### Fonction
@@ -92,12 +92,12 @@ Dans notre cas il faudrait passer la fonction free de stdlib.h, sinon mettre la 
 #### Création de la file
 ##### Fonction
 ```
-dQueue d_create_queue();
+dQueue d_init_queue();
 ```
 Renvoie une file initialisée et vide.
 ##### Utilisation
 ```
-dQueue file = d_create_queue();
+dQueue file = d_init_queue();
 ```
 #### Ajout dans la file
 ##### Fonction
@@ -132,14 +132,14 @@ Mêmes indications que pour la pile.
 #### Création de la liste
 ##### Fonction
 ```
-dList d_create_list(int (*sort_test)(void*,void*));
+dList d_init_list(int (*sort_test)(void*,void*));
 ```
 Renvoie une List initialisée et vide et qui utilise la fonction de tri passé en argument :
 
-La fonction de tri doit renvoyer 1 lorsque le premier contenu (contenu représenté par void*) doit être plus proche du début que le deuxième, 0 sinon.
+La fonction de tri doit renvoyer 1 lorsque le premier contenu (contenu représenté par void*) doit être plus proche du début que le deuxième, 0 si égal et -1 sinon.
 ##### Utilisation
 ```
-dList liste = d_create_list(test_tri_contenu);
+dList liste = d_init_list(test_tri_contenu);
 ```
 On crée alors une liste qui trie les contenus par ordre décroissant.
 #### Ajout dans la liste
@@ -159,7 +159,7 @@ d_insert_list(&liste,creer_contenu());
 dDoubleChain* d_find_chain_list(dList* list,void* content);
 void* d_find_list(dList* list,void* content);
 ```
-Renvoient sans supprimer de la chaine l'élément le plus proche du début tel que sort_test(contenu,contenu_passer_en_argument) renvoie 0;
+Renvoient sans supprimer de la chaine l'élément le plus proche du début tel que sort_test(contenu,contenu_passer_en_argument) renvoie 0 ou -1;
 #### Suppression dans la liste
 ##### Fonction
 ```
@@ -184,14 +184,14 @@ Mêmes indications que pour la pile.
 #### Création du tas
 ##### Fonction
 ```
-dHeap d_create_heap(int (*sort_test)(void*,void*));
+dHeap d_init_heap(int (*sort_test)(void*,void*));
 ```
 Renvoie un tas initialisé et vide et qui utilise la fontion de tri test_tri :
 
 Cette fonction de tri doit renvoyer 1 lorsque le premier contenu doit être plus haut dans le tas que le deuxième.
 ##### Utilisation
 ```
-dHeap tas = d_create_heap(test_tri_contenu);
+dHeap tas = d_init_heap(test_tri_contenu);
 ```
 Crée donc un tas qui va ressortir son élément le plus "grand".
 #### Ajout dans le tas
@@ -227,14 +227,14 @@ Mêmes indications que pour la pile.
 #### Création de l'AVL
 ##### Fonction
 ```
-dAVL d_create_avl(int (*sort_test)(void*,void*))
+dAVL d_init_avl(int (*sort_test)(void*,void*))
 ```
 Renvoie un AVL initialisé et vide et qui utilise la fonction de tri passé en argument :
 
-La fonction de tri doit renvoyer 1 lorsque le premier contenu (contenu représenté par void*) doit être plus à gauche que le deuxième, 0 sinon.
+La fonction de tri doit renvoyer 1 lorsque le premier contenu (contenu représenté par void*) doit être plus à gauche que le deuxième, 0 si égal et -1 sinon.
 ##### Utilisation
 ```
-dAVL avl = d_create_avl(test_tri_contenu);
+dAVL avl = d_init_avl(test_tri_contenu);
 ```
 On crée alors un AVL qui trie les contenus par ordre décroissant (de gauche à droite).
 #### Ajout dans l'AVL
@@ -254,7 +254,7 @@ d_insert_avl(&avl,creer_contenu());
 dNode* d_find_node_avl(dAVL* avl,void* content);
 void* d_find_avl(dAVL* avl,void* content);
 ```
-Renvoient sans supprimer de l'arbre l'élément le plus a droite tel que test_tri(contenu,contenu_passer_en_argument) renvoie 1;
+Renvoient sans supprimer de l'arbre l'élément le plus a droite tel que test_tri(contenu,contenu_passer_en_argument) renvoie 1 ou 0;
 #### Suppression dans l'AVL
 ##### Fonction
 ```
@@ -281,7 +281,7 @@ Mêmes indications que pour la pile.
 Le vector est un tableau de pointeurs vers les données, donc les données doivent être allouées dynamiquement.
 #### Création du vector
 ```
-dVector d_create_vector(unsigned int size);
+dVector d_init_vector(unsigned int size);
 ```
 Renvoie un vector de la taille de size initialisé à NULL;
 #### Ajout dans un vector

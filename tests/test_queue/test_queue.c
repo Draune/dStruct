@@ -8,7 +8,7 @@
 
 void test_queue_1(void){
     int* output;
-    dQueue queue = d_create_queue();
+    dQueue queue = d_init_queue();
     for(int i = 0;i<5;i++){
         d_push_queue(&queue,create_int(i));
     }

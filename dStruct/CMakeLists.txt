@@ -12,6 +12,7 @@ set(SRCS
     sources/stack.c
     sources/heap.c
     sources/vector.c
+    sources/graph.c
     )
     
 set(HEADERS
@@ -23,6 +24,7 @@ set(HEADERS
     headers/stack.h
     headers/heap.h     
     headers/vector.h     
+    headers/graph.h  
     )
 
 add_library(dStruct ${SRCS} ${HEADERS})

@@ -17,11 +17,11 @@ void test_vector_1(){
 void test_create(){
     printf("test_create\n");
 
-    dVector vector = d_create_vector(1);
+    dVector vector = d_init_vector(1);
     printf("%d\t%d\n",vector.size,vector.real_size);
     d_clear_vector(&vector,free);
 
-    vector = d_create_vector(13);
+    vector = d_init_vector(13);
     printf("%d\t%d\n",vector.size,vector.real_size);
     d_clear_vector(&vector,free);
 
@@ -31,7 +31,7 @@ void test_create(){
 void test_access_insert_remove(){
     printf("test_access_insert_remove\n");
 
-    dVector vector = d_create_vector(13);
+    dVector vector = d_init_vector(13);
     int is_null = 1;
     for (int i = 0;i<vector.size;i++){
         if(d_access_vector(&vector,i) != NULL)
@@ -86,7 +86,7 @@ void test_access_insert_remove(){
 void test_push_pop_back(){
     printf("test_push_pop\n");
 
-    dVector vector = d_create_vector(0);
+    dVector vector = d_init_vector(0);
     printf("%d\t%d\n",vector.size,vector.real_size);
     for(int i = 0;i<10;i++){
         d_push_back_vector(&vector,create_int(i));

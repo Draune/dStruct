@@ -7,5 +7,7 @@
 #include"link.h"
 #include"stack.h"
 #include"heap.h"
+#include"vector.h"
+#include"graph.h"
 
 #endif

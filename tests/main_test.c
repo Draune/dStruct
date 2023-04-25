@@ -4,8 +4,9 @@
 #include"test_list/test_list.h"
 #include"test_avl/test_avl.h"
 #include"test_vector/test_vector.h"
+#include"test_graph/test_graph.h"
 
 int main(void){
-    test_vector_1();
+    test_graph_1();
     return 0;
 }

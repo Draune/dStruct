@@ -10,12 +10,12 @@
 #define REMOVE_TEST_VALUE 3
 
 int sort_int_list(void* int_1,void* int_2){
-    return (*((int*)int_1)>*((int*)int_2))?1:0;
+    return (*((int*)int_1)>*((int*)int_2))?1:-1;
 }
 
 void test_list_1(void){
     int* output;
-    dList list = d_create_list(sort_int_list);
+    dList list = d_init_list(sort_int_list);
 
     d_insert_list(&list,create_int(END_TEST_VALUE));
     d_insert_list(&list,create_int(FIRST_REMOVE_TEST_VALUE));

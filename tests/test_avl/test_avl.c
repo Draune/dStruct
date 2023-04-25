@@ -5,8 +5,10 @@
 #include"../create_int.h"
 
 int sort_int_avl(void* int_1,void* int_2){
-    return (*((int*)int_1)<=*((int*)int_2))?1:0;
+    return (*((int*)int_1)<=*((int*)int_2))?1:-1;
 }
+
+void test_avl_clear();
 
 #define LOW_VALUE 1
 #define AVERAGE_VALUE 2
@@ -27,8 +29,18 @@ void test_avl_free(dNode* top,dNode* left,dNode* right);
 void test_avl_total();
 
 void test_avl_1(void){
+    test_avl_clear();
     test_avl_rotate();
     test_avl_total();
+}
+
+void test_avl_clear(){
+    dAVL avl = d_init_avl(sort_int_avl);
+    for(int i = 0;i<20;i++)
+        d_insert_avl(&avl,create_int(i));
+    d_clear_avl(&avl,free);
+    if(avl.start == NULL)
+        printf("test clear ok\n\n");
 }
 
 void test_avl_rotate(){
@@ -39,7 +51,7 @@ void test_avl_rotate(){
 }
 
 void test_avl_rotate_left(){
-    dAVL avl = d_create_avl(sort_int_avl);
+    dAVL avl = d_init_avl(sort_int_avl);
     d_insert_avl(&avl,create_int(LOW_VALUE));
     d_insert_avl(&avl,create_int(AVERAGE_VALUE));
     d_insert_avl(&avl,create_int(HIGH_VALUE));
@@ -55,7 +67,7 @@ void test_avl_rotate_left(){
 }
 
 void test_avl_rotate_right_left(){
-    dAVL avl = d_create_avl(sort_int_avl);
+    dAVL avl = d_init_avl(sort_int_avl);
     d_insert_avl(&avl,create_int(LOW_VALUE));
     d_insert_avl(&avl,create_int(HIGH_VALUE));
     d_insert_avl(&avl,create_int(AVERAGE_VALUE));
@@ -71,7 +83,7 @@ void test_avl_rotate_right_left(){
 }
 
 void test_avl_rotate_right(){
-    dAVL avl = d_create_avl(sort_int_avl);
+    dAVL avl = d_init_avl(sort_int_avl);
     d_insert_avl(&avl,create_int(HIGH_VALUE));
     d_insert_avl(&avl,create_int(AVERAGE_VALUE));
     d_insert_avl(&avl,create_int(LOW_VALUE));
@@ -87,7 +99,7 @@ void test_avl_rotate_right(){
 }
 
 void test_avl_rotate_left_right(){
-    dAVL avl = d_create_avl(sort_int_avl);
+    dAVL avl = d_init_avl(sort_int_avl);
     d_insert_avl(&avl,create_int(HIGH_VALUE));
     d_insert_avl(&avl,create_int(LOW_VALUE));
     d_insert_avl(&avl,create_int(AVERAGE_VALUE));
@@ -154,7 +166,7 @@ void test_avl_free(dNode* top,dNode* left,dNode* right){
 }
 
 void test_avl_total(){
-    dAVL avl = d_create_avl(sort_int_avl);
+    dAVL avl = d_init_avl(sort_int_avl);
     d_insert_avl(&avl,create_int(START_VALUE));
     d_insert_avl(&avl,create_int(INTERMEDIATE_VALUE));
     d_insert_avl(&avl,create_int(END_VALUE));

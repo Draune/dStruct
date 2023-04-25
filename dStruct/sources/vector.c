@@ -2,7 +2,7 @@
 #include<math.h>
 #include<stdlib.h>
 
-dVector d_create_vector(unsigned int size){
+dVector d_init_vector(unsigned int size){
     dVector vector;
 
     if(size != 0){
@@ -49,7 +49,7 @@ void* d_pop_back_vector(dVector* vector){
     void* _return = d_remove_vector(vector,vector->size-1);
     if(vector->size == 1){
         free(vector->content_array);
-        *vector = d_create_vector(0);
+        *vector = d_init_vector(0);
         (vector->size)++;
     }
     else if(vector->size < vector->real_size/3){
@@ -88,5 +88,5 @@ void d_clear_vector(dVector* vector,void (*free_content)(void*)){
     }
     free(vector->content_array);
 
-    *vector = d_create_vector(0);
+    *vector = d_init_vector(0);
 }

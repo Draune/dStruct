@@ -1,6 +1,6 @@
 #include "../headers/queue.h"
 
-dQueue d_create_queue(){
+dQueue d_init_queue(){
     dQueue queue;
     queue.start = NULL;
     queue.end = NULL;

@@ -13,7 +13,7 @@ int get_high(dNode* node);
 dNode* find_replacement(dNode* node);
 dNode* replace(dAVL* avl,dNode* node,dNode* replacement); // the output for sort
 
-dAVL d_create_avl(int (*sort_test)(void*,void*)){
+dAVL d_init_avl(int (*sort_test)(void*,void*)){
     dAVL avl;
     avl.start = NULL;
     avl.sort_test = sort_test;
@@ -32,7 +32,7 @@ dNode* d_find_node_avl(dAVL* avl,void* content){
     dNode* return_ = NULL;
     dNode* current = avl->start;
     while(current != NULL){
-        if(avl->sort_test((void*)current->content,(void*)content)){
+        if(avl->sort_test((void*)current->content,(void*)content) >= 0){
             return_ = current;
             current = current->right;
         }
@@ -44,9 +44,17 @@ dNode* d_find_node_avl(dAVL* avl,void* content){
 
 void* d_find_avl(dAVL* avl,void* content){
     dNode* return_ = d_find_node_avl(avl,content);
-    if(return_ == NULL)
-        return NULL;
-    return (void*)return_->content;
+    return (return_ == NULL)?NULL:return_->content;
+}
+
+dNode* d_find_eq_node_avl(dAVL* avl,void* content){
+    dNode* return_ = d_find_node_avl(avl,content);
+    return (return_ == NULL || avl->sort_test(content,return_->content) != 0)?NULL:return_;
+}
+
+void* d_find_eq_avl(dAVL* avl,void* content){
+    void* return_ = d_find_avl(avl,content);
+    return (return_ == NULL || avl->sort_test(content,return_) != 0)?NULL:return_;
 }
 
 void* d_remove_node_avl(dAVL* avl,dNode* node){
@@ -72,6 +80,8 @@ void d_clear_avl(dAVL* avl,void (*free_content)(void*)){
             if(to_delete != NULL)
                 free_content(to_delete);
         }
+        if(more_on_right_content != NULL)
+            free_content(more_on_right_content);
     }
 }
 
@@ -82,7 +92,7 @@ void fix(dAVL* avl,dNode* node){
         dNode* current = avl->start;
         int fixed = NOT_FIXED;
         while(fixed != FIXED){
-            if(avl->sort_test((void*)node->content,(void*)current->content)){
+            if(avl->sort_test((void*)node->content,(void*)current->content) >= 0){
                 if(current->left == NULL){
                     node->prev = current;
                     current->left = node;

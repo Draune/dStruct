@@ -19,7 +19,10 @@ add_executable(test
                tests/test_avl/test_avl.c           
                tests/test_avl/test_avl.h
                tests/test_vector/test_vector.c           
-               tests/test_vector/test_vector.h)  
+               tests/test_vector/test_vector.h
+               tests/test_graph/test_graph.c           
+               tests/test_graph/test_graph.h)
+
 
 add_subdirectory(dStruct)
 target_link_libraries(test dStruct)
