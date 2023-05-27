@@ -21,7 +21,9 @@ add_executable(test
                tests/test_vector/test_vector.c           
                tests/test_vector/test_vector.h
                tests/test_graph/test_graph.c           
-               tests/test_graph/test_graph.h)
+               tests/test_graph/test_graph.h
+               tests/test_sm/test_sm.c           
+               tests/test_sm/test_sm.h)
 
 
 add_subdirectory(dStruct)

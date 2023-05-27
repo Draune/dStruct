@@ -9,5 +9,6 @@
 #include"heap.h"
 #include"vector.h"
 #include"graph.h"
+#include"error.h"
 
 #endif
