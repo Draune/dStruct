@@ -13,6 +13,7 @@ set(SRCS
     sources/heap.c
     sources/vector.c
     sources/graph.c
+    sources/sm.c
     )
     
 set(HEADERS
@@ -25,8 +26,10 @@ set(HEADERS
     headers/heap.h     
     headers/vector.h     
     headers/graph.h  
+    headers/sm.h  
+    headers/error.h  
     )
 
 add_library(dStruct ${SRCS} ${HEADERS})
-
+# link math.h library
 target_link_libraries(dStruct m)
